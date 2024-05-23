@@ -1,0 +1,1 @@
+sqlite3 -header $1 < emulator.sql | column -t -s'|'

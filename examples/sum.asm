@@ -1,0 +1,18 @@
+; sum all numbers from 1 to 10
+PUSH[0]
+PUSH[10]
+
+DUP
+PICK[2]
+ADD
+PICK[1]
+
+PUSH[1]
+SUB
+
+DUP
+JUMPZ[18]
+JUMP[4]
+
+POP
+FIN
