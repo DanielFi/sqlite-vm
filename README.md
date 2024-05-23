@@ -1,4 +1,4 @@
-# SQLVM
+# SQLite VM
 
 A simple 8-bit stack VM implementation in SQLite.  
 
