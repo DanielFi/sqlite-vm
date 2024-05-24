@@ -1,0 +1,16 @@
+PUSH[5]
+CALL[5] ; sum(5)
+FIN
+
+; 5 | sum(N)
+PICK[1]
+DUP
+JUMPZ[17]
+DUP
+PUSH[1]
+SUB
+CALL[5] ; sum(N-1)
+ADD
+; 17 |
+PICK[1]
+RET
