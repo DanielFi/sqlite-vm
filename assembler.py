@@ -29,19 +29,40 @@ OPCODES = {
 
 
 def assemble(assembly: str) -> bytes:
-    pattern = re.compile(r'(?:(\w+)(\[\d+\])?)?\s*(?:;.*)?')
+    assembly_pattern = re.compile(r'^\s*(?:(\w+)(\[(?:\d+|\w+)\])?)?\s*(?:;.*)?$')
+    label_pattern = re.compile(r'^\s*([a-zA-Z]+):\s*(?:;.*)?$')
+
+    lines = [line.strip() for line in assembly.splitlines(keepends=False)]
+
+    labels = {}
+    offset = 0
+    for line in lines:
+        match = assembly_pattern.match(line)
+        if match is not None:
+            if match.group(2) is not None:
+                offset += 2
+            elif match.group(1) is not None:
+                offset += 1
+            
+            continue
+        
+        match = label_pattern.match(line)
+        if match is not None:
+            labels[match.group(1)] = offset
 
     result = []
 
-    for i, line in enumerate(assembly.splitlines(keepends=False)):
-        line = line.strip()
+    for i, line in enumerate(lines):
         if not line:
             continue
         
-        match = pattern.match(line)
+        match = assembly_pattern.match(line)
 
         if not match:
+            if label_pattern.match(line):
+                continue
             raise ValueError(f'Invalid assembly at line {i}')
+
 
         mnemonic = match.group(1)
 
@@ -55,9 +76,16 @@ def assemble(assembly: str) -> bytes:
 
         arg = match.group(2)
         if arg is not None:
-            arg = int(arg[1:-1], base=0)
-            if arg > 256 or arg < -255:
-                raise ValueError(f'Invalid arg value {arg}')
+            arg = arg[1:-1]
+            if arg.isalpha():
+                try:
+                    arg = labels[arg]
+                except KeyError:
+                    raise ValueError(f'Invalid label {arg}')
+            else:
+                arg = int(arg, base=0)
+                if arg > 256 or arg < -255:
+                    raise ValueError(f'Invalid arg value {arg}')
             result.append(arg)
 
     return bytes(result)

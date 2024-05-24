@@ -1,16 +1,17 @@
 PUSH[5]
-CALL[5] ; sum(5)
+CALL[sum] ; sum(5)
 FIN
 
-; 5 | sum(N)
+; sum(N)
+sum:
 PICK[1]
 DUP
-JUMPZ[17]
+JUMPZ[sumret]
 DUP
 PUSH[1]
 SUB
-CALL[5] ; sum(N-1)
+CALL[sum] ; sum(N-1)
 ADD
-; 17 |
+sumret:
 PICK[1]
 RET
