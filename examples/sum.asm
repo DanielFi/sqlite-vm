@@ -1,7 +1,12 @@
-; sum all numbers from 1 to 10
-PUSH[0]
-PUSH[10]
+PUSH[5]
+CALL[5]
+FIN
 
+; 5 | sum(N): sum all numbers from 1 to N
+PUSH[0]
+PICK[2]
+
+; 9 |
 DUP
 PICK[2]
 ADD
@@ -11,8 +16,10 @@ PUSH[1]
 SUB
 
 DUP
-JUMPZ[18]
-JUMP[4]
+JUMPZ[23]
+JUMP[9]
 
+; 23 |
 POP
-FIN
+PICK[1]
+RET

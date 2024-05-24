@@ -60,7 +60,7 @@ stack: `x   ->  ~x`
 #### 15 - JUMP[x]
 pc: `x`
 
-#### 16 - JUMPP
+#### 16 - JUMPP/RET
 stack: `x   ->  `  
 pc: `x`
 
@@ -72,7 +72,12 @@ pc: if `c=0`, `x`
 stack: `c x ->  `  
 pc: if `c=0`, `x`
 
-#### 20 - PC
-stack: `    -> pc`
+#### 19 - CALL[x]
+stack: `    -> pc + 2`
+pc: `x`
+
+#### 20 - CALLP
+stack: `x   -> pc + 1`
+pc: `x`
 
 #### 254 - FIN

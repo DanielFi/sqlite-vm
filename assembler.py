@@ -17,9 +17,11 @@ OPCODES = {
     'NOT': 14,
     'JUMP': 15,
     'JUMPP': 16,
+    'RET': 16,
     'JUMPZ': 17,
     'JUMPPZ': 18,
-    'PC': 20,
+    'CALL': 19,
+    'CALLP': 20,
     'FIN': 254
 }
 

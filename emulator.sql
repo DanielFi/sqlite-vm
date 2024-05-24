@@ -28,6 +28,10 @@ WITH RECURSIVE hex(int, blob) AS (
             WHEN 17 THEN IIF(UNHEX(SUBSTR(HEX(stack), 1 + 2 * (LENGTH(stack) - 1), 2))=X'00', arg, pc + 2)
             -- JUMPPZ
             WHEN 18 THEN IIF(UNHEX(SUBSTR(HEX(stack), 1 + 2 * (LENGTH(stack) - 2), 2))=X'00', (SELECT int FROM hex WHERE blob=UNHEX(SUBSTR(HEX(stack), 1 + 2 * (LENGTH(stack) - 1), 2))), pc + 1)
+            -- CALL[x]
+            WHEN 19 THEN arg
+            -- CALLP
+            WHEN 20 THEN (SELECT int FROM hex WHERE blob=UNHEX(SUBSTR(HEX(stack), 1 + 2 * (LENGTH(stack) - 1), 2)))
             ELSE pc + 1 + (instruction & 1)
             END,
             pc),
@@ -78,8 +82,10 @@ WITH RECURSIVE hex(int, blob) AS (
             WHEN 17 THEN UNHEX(SUBSTR(HEX(stack), 1, 2 * (LENGTH(stack) - 1)))
             -- JUMPPZ
             WHEN 18 THEN UNHEX(SUBSTR(HEX(stack), 1, 2 * (LENGTH(stack) - 2)))
-            -- PC
-            WHEN 20 THEN UNHEX(HEX(stack) || HEX((SELECT blob FROM hex WHERE int=(pc+1)%256)))
+            -- CALL
+            WHEN 19 THEN UNHEX(HEX(stack) || HEX((SELECT blob FROM hex WHERE int=(pc+2)%256)))
+            -- CALLP
+            WHEN 20 THEN UNHEX(SUBSTR(HEX(stack), 1, 2 * (LENGTH(stack) - 1)) || HEX((SELECT blob FROM hex WHERE int=(pc+1)%256)))
             ELSE stack
             END,
             stack)
