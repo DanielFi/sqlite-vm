@@ -24,6 +24,7 @@ OPCODES = {
     'CALLP': 20,
     'READ': 22,
     'WRITE': 24,
+    'PUTC': 26,
     'FIN': 254
 }
 

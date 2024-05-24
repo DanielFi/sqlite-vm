@@ -10,14 +10,21 @@ Samples programs can be found in `examples/`.
 
 Assemble a program:
 ```sh
-python3 assembler.py examples/sum.asm examples/sum.db
+python3 assembler.py examples/hello.asm examples/hello.db
 ```
 
 And run it:
 
 ```sh
-./emulator.sh examples/sub.db
+./emulator.sh examples/hello.db
 ```
+
+## I/O
+
+The `PUTC` instruction outputs a character to STDOUT using SQLite's fileio
+extension, by writing to `/proc/self/fd/1`.
+
+> The fileio extension should be compiled into the sqlite3 binary by default.
 
 ## Architecture
 
@@ -87,5 +94,8 @@ stack: `i   -> memory[i]`
 #### 24 - WRITE
 stack: `x i ->  `
 memory: `[i] = x`
+
+#### 26 - PUTC
+stack: `c   ->  `
 
 #### 254 - FIN

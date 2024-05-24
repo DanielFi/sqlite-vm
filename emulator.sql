@@ -92,6 +92,8 @@ WITH RECURSIVE hex(int, blob) AS (
             WHEN 22 THEN UNHEX(SUBSTR(HEX(stack), 1, 2 * (LENGTH(stack) - 1)) || SUBSTR(HEX(memory), 1 + 2 * (SELECT int FROM hex WHERE blob=UNHEX(SUBSTR(HEX(stack), 1 + 2 * (LENGTH(stack) - 1), 2))), 2))
             -- WRITE
             WHEN 24 THEN UNHEX(SUBSTR(HEX(stack), 1, 2 * (LENGTH(stack) - 2)))
+            -- PUTC
+            WHEN 26 THEN UNHEX(SUBSTR(HEX(stack), 1, 2 * (LENGTH(stack) - (SELECT WRITEFILE('/proc/self/fd/1', UNHEX(SUBSTR(HEX(stack), 1 + 2 * (LENGTH(stack) - 1), 2)))))))
             ELSE stack
             END,
             stack),
@@ -108,8 +110,6 @@ WITH RECURSIVE hex(int, blob) AS (
     WHERE instruction<>254
 )
 SELECT
-    pc,
-    HEX(stack) as stack,
-    HEX(memory) as memory
+    pc
 FROM vm
-WHERE cycle%2=0;
+WHERE cycle%2=3;
