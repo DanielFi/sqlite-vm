@@ -5,14 +5,16 @@ WITH RECURSIVE hex(int, blob) AS (
     instruction,
     arg,
     pc,
-    stack
+    stack,
+    memory
 ) AS (
     SELECT
         0,
         0,
         0,
         0,
-        ZEROBLOB(0)
+        ZEROBLOB(0),
+        ZEROBLOB(256)
     UNION ALL
     SELECT
         cycle + 1,
@@ -86,14 +88,28 @@ WITH RECURSIVE hex(int, blob) AS (
             WHEN 19 THEN UNHEX(HEX(stack) || HEX((SELECT blob FROM hex WHERE int=(pc+2)%256)))
             -- CALLP
             WHEN 20 THEN UNHEX(SUBSTR(HEX(stack), 1, 2 * (LENGTH(stack) - 1)) || HEX((SELECT blob FROM hex WHERE int=(pc+1)%256)))
+            -- READ
+            WHEN 22 THEN UNHEX(SUBSTR(HEX(stack), 1, 2 * (LENGTH(stack) - 1)) || SUBSTR(HEX(memory), 1 + 2 * (SELECT int FROM hex WHERE blob=UNHEX(SUBSTR(HEX(stack), 1 + 2 * (LENGTH(stack) - 1), 2))), 2))
+            -- WRITE
+            WHEN 24 THEN UNHEX(SUBSTR(HEX(stack), 1, 2 * (LENGTH(stack) - 2)))
             ELSE stack
             END,
-            stack)
+            stack),
+        IIF(cycle & 1,
+            CASE instruction
+            -- WRITE
+            WHEN 24 THEN UNHEX(SUBSTR(HEX(memory), 1, 2 * (SELECT int FROM hex WHERE blob=UNHEX(SUBSTR(HEX(stack), 1 + 2 * (LENGTH(stack) - 1), 2))))
+                               || SUBSTR(HEX(stack), 1 + 2 * (LENGTH(stack) - 2), 2)
+                               || SUBSTR(HEX(memory), 1 + 2 * (SELECT 1 + int FROM hex WHERE blob=UNHEX(SUBSTR(HEX(stack), 1 + 2 * (LENGTH(stack) - 1), 2)))))
+            ELSE memory
+            END,
+            memory)
     FROM vm
     WHERE instruction<>254
 )
 SELECT
     pc,
-    HEX(stack) as stack
+    HEX(stack) as stack,
+    HEX(memory) as memory
 FROM vm
 WHERE cycle%2=0;

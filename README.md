@@ -24,7 +24,8 @@ And run it:
 * 8-bit
 * stack based (no registers)
 * unlimited stack
-* 256 bytes program memory 
+* 256 bytes program memory
+* 256 bytes RAM
 
 ### Instruction Set
 
@@ -79,5 +80,12 @@ pc: `x`
 #### 20 - CALLP
 stack: `x   -> pc + 1`
 pc: `x`
+
+#### 22 - READ
+stack: `i   -> memory[i]`
+
+#### 24 - WRITE
+stack: `x i ->  `
+memory: `[i] = x`
 
 #### 254 - FIN

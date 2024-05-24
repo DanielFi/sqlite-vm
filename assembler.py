@@ -22,6 +22,8 @@ OPCODES = {
     'JUMPPZ': 18,
     'CALL': 19,
     'CALLP': 20,
+    'READ': 22,
+    'WRITE': 24,
     'FIN': 254
 }
 
